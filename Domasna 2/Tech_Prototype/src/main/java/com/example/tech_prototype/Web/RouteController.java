@@ -48,5 +48,4 @@ public class RouteController {
         Route route = this.routeService.updateDestinations(Long.parseLong(id), p);
         return ResponseEntity.ok().body(route);
     }
-
 }

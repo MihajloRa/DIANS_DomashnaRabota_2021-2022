@@ -32,7 +32,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public Route addRoute(User user, Geometry start, String [] preferences){
-        List<Point> viableDestinations = new ArrayList<Point>();
+        List<Point> viableDestinations = new ArrayList<>();
         for(String s : preferences){
             viableDestinations.addAll(this.pointRepository.findAllByTourismIsContaining(s));
         }
