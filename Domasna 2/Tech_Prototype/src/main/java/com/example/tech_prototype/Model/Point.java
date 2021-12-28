@@ -1,10 +1,15 @@
 package com.example.tech_prototype.Model;
 
-import com.vividsolutions.jts.geom.Geometry;
+import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
+import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
 
@@ -18,9 +23,12 @@ public class Point {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "geom")
+    @Type(type = "org.hibernate.spatial.JTSGeometryType")
+    @JsonSerialize(using = GeometrySerializer.class)
+    @JsonDeserialize(contentUsing = GeometryDeserializer.class)
     private Geometry geom;
 
     @Column(name = "full_id", length = 254)
