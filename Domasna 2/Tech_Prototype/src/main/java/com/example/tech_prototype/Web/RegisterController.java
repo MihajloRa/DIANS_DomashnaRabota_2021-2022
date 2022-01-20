@@ -5,7 +5,6 @@ import com.example.tech_prototype.Model.Exceptions.InvalidArgumentException;
 import com.example.tech_prototype.Model.Exceptions.PasswordsDoNotMatchException;
 import com.example.tech_prototype.Model.Role;
 import com.example.tech_prototype.Model.User;
-import com.example.tech_prototype.Service.AuthService;
 import com.example.tech_prototype.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

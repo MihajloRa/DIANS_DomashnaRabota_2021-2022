@@ -41,10 +41,9 @@ public class UserController {
                                        @RequestParam String latitude,
                                        @RequestParam String longitude,
                                        @RequestParam String [] preferences) {
-        User user = this.userService.loadUserByUsername(username);
         Geometry start = new GeometryFactory().createPoint(new Coordinate
                 (Double.parseDouble(latitude), Double.parseDouble(longitude)));
-        Route route = this.routeService.addRoute(user, start, preferences);
+        Route route = this.routeService.addRoute(username, start, preferences);
         return ResponseEntity.ok().body(route);
     }
 }

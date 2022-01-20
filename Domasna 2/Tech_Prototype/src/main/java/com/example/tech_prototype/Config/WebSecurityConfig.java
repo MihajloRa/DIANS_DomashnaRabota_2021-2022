@@ -28,15 +28,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable()
+       http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/assets/**", "api/register").permitAll()
+                .antMatchers("/", "/assets/**", "api/register", "api/login").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/").permitAll()
-                .failureUrl("api/login?error=BadCredentials")
+                .failureUrl("/")
                 .defaultSuccessUrl("/", true)
                 .and()
                 .logout()
@@ -60,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .withUser("admin")
 //                .password(passwordEncoder.encode("admin"))
 //                .authorities("ROLE_ADMIN");
-        auth.authenticationProvider(authenticationProvider);
+        //auth.authenticationProvider(authenticationProvider);
     }
 
 

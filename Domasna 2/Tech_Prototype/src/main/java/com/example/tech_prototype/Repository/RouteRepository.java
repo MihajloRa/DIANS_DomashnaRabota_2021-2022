@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface RouteRepository extends JpaRepository<Route, Long> {
-    List<Route> findAllByUserUsername(String username);
+    List<Route> findAllByUser(User user);
     List<Route> findByUserAndS(User user, Status s);
 }

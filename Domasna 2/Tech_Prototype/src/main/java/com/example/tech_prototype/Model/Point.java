@@ -4,11 +4,7 @@ import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.Type;
+import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
@@ -16,7 +12,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "Points")
 public class Point {
@@ -26,7 +21,6 @@ public class Point {
     private Long id;
 
     @Column(name = "geom")
-    @Type(type = "org.hibernate.spatial.JTSGeometryType")
     @JsonSerialize(using = GeometrySerializer.class)
     @JsonDeserialize(contentUsing = GeometryDeserializer.class)
     private Geometry geom;

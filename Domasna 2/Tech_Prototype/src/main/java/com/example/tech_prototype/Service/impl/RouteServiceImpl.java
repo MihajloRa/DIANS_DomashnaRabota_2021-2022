@@ -6,6 +6,7 @@ import com.example.tech_prototype.Model.Status;
 import com.example.tech_prototype.Model.User;
 import com.example.tech_prototype.Repository.PointRepository;
 import com.example.tech_prototype.Repository.RouteRepository;
+import com.example.tech_prototype.Repository.UserRepository;
 import com.example.tech_prototype.Service.RouteService;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,25 @@ import java.util.stream.Collectors;
 public class RouteServiceImpl implements RouteService {
     private final RouteRepository routeRepository;
     private final PointRepository pointRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    RouteServiceImpl(RouteRepository repository, PointRepository pointRepository){
+    RouteServiceImpl(RouteRepository repository, PointRepository pointRepository, UserRepository userRepository){
         this.routeRepository = repository;
         this.pointRepository = pointRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public List<Route> getRoutes(String username) { return routeRepository.findAllByUserUsername(username); }
+    public List<Route> getRoutes(String username) {
+        User u = this.userRepository.findByUsername(username).get();
+        return this.routeRepository.findAllByUser(u);
+    }
 
     @Override
-    public Route addRoute(User user, Geometry start, String [] preferences){
+    public Route addRoute(String username, Geometry start, String [] preferences){
         List<Point> viableDestinations = new ArrayList<>();
+        User user = this.userRepository.findByUsername(username).get();
         for(String s : preferences){
             viableDestinations.addAll(this.pointRepository.findAllByTourismIsContaining(s));
         }
@@ -40,6 +47,8 @@ public class RouteServiceImpl implements RouteService {
         ArrayList<Point> routeDestinations = viableDestinations.stream().filter(point -> ((point.getGeom().distance(start) / (180 * Math.PI)) * 6371) < 3).
                 collect(Collectors.toCollection(ArrayList::new));
 
+        user.getUser_routes().add(new Route(user, start, routeDestinations));
+        this.userRepository.save(user);
         return this.routeRepository.save(new Route(user, start, routeDestinations));
     }
 
