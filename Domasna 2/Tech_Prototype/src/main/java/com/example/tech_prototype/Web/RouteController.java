@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/route")
 public class RouteController {
     UserService userService;
@@ -25,27 +26,24 @@ public class RouteController {
         this.routeService = routeService;
     }
 
-    @GetMapping
-    ResponseEntity<User> getUser(HttpServletRequest request){
-        User u = (User) request.getSession().getAttribute("user");
-        return ResponseEntity.ok().body(u);
-    }
-
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     ResponseEntity<Route> getRoute(@PathVariable String id){
-        Route route = this.routeService.getRoute(Long.parseLong(id)).get();
+        Route route = this.routeService.getRoute(Long.parseLong(id));
         return ResponseEntity.ok().body(route);
     }
 
-    @PutMapping("/{id}")
+    @PostMapping(value = "/{id}", produces = "application/json")
     ResponseEntity<Route> updateStatus(@PathVariable String id,@RequestParam String updateStatus){
         Route route = this.routeService.updateStatus(Long.parseLong(id), updateStatus);
         return ResponseEntity.ok().body(route);
     }
 
-    @PutMapping("/{id}/destination")
-    ResponseEntity<Route> updateDestinations(@PathVariable String id, @RequestBody Point p){
-        Route route = this.routeService.updateDestinations(Long.parseLong(id), p);
+    @PostMapping(value = "/{id}/destination", produces = "application/json")
+    ResponseEntity<Route> updateDestinations(@PathVariable String id,
+                                             @RequestParam String latitude,
+                                             @RequestParam String longitude){
+        Route route = this.routeService.updateDestinations(Long.parseLong(id),
+                Double.parseDouble(latitude), Double.parseDouble(longitude));
         return ResponseEntity.ok().body(route);
     }
 }

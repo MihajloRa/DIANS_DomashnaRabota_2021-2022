@@ -13,15 +13,12 @@ import java.util.Collections;
 import java.util.List;
 
 @Entity
+@Table(name="users")
 @RequiredArgsConstructor
 @Getter
 @Setter
 public class User implements UserDetails {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @NotBlank
     private String username;
 
@@ -62,21 +59,25 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return isAccountNonExpired;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return isAccountNonLocked;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return isCredentialsNonExpired;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return isEnabled;
     }

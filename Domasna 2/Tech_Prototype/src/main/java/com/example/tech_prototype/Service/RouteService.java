@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 public interface RouteService {
     List<Route> getRoutes(String username);
-    Route addRoute(String username, Geometry start, String [] preferences);
-    Optional<Route> getRoute(Long id);
+    Route addRoute(String username, Geometry start, List<String> preferences);
+    Route getRoute(Long id);
     Route updateStatus(Long id, String status);
-    Route updateDestinations(Long id, Point p);
+    Route updateDestinations(Long id, double longitude, double latitude);
 }

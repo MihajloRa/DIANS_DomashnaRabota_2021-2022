@@ -1,5 +1,7 @@
 package com.example.tech_prototype.Service.impl;
 
+import com.example.tech_prototype.Model.DTOs.DestinationCoordinates;
+import com.example.tech_prototype.Model.Exceptions.InvalidArgumentException;
 import com.example.tech_prototype.Model.Point;
 import com.example.tech_prototype.Model.Route;
 import com.example.tech_prototype.Model.Status;
@@ -8,11 +10,15 @@ import com.example.tech_prototype.Repository.PointRepository;
 import com.example.tech_prototype.Repository.RouteRepository;
 import com.example.tech_prototype.Repository.UserRepository;
 import com.example.tech_prototype.Service.RouteService;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinates;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,16 +38,16 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public List<Route> getRoutes(String username) {
-        User u = this.userRepository.findByUsername(username).get();
+        User u = this.userRepository.findByUsername(username).orElseThrow(InvalidArgumentException::new);
         return this.routeRepository.findAllByUser(u);
     }
 
     @Override
-    public Route addRoute(String username, Geometry start, String [] preferences){
+    public Route addRoute(String username, Geometry start, List<String> preferences){
         List<Point> viableDestinations = new ArrayList<>();
-        User user = this.userRepository.findByUsername(username).get();
+        User user = this.userRepository.findByUsername(username).orElseThrow(InvalidArgumentException::new);
         for(String s : preferences){
-            viableDestinations.addAll(this.pointRepository.findAllByTourismIsContaining(s));
+            viableDestinations.addAll(this.pointRepository.findAllByTourismContaining(s));
         }
 
         ArrayList<Point> routeDestinations = viableDestinations.stream().filter(point -> ((point.getGeom().distance(start) / (180 * Math.PI)) * 6371) < 3).
@@ -53,13 +59,13 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Optional<Route> getRoute(Long id) {
-        return this.routeRepository.findById(id);
+    public Route getRoute(Long id) {
+        return this.routeRepository.findById(id).orElseThrow(InvalidArgumentException::new);
     }
 
     @Override
     public Route updateStatus(Long id, String status) {
-        Route route = this.routeRepository.findById(id).get();
+        Route route = this.routeRepository.findById(id).orElseThrow(InvalidArgumentException::new);
         Status s;
         switch (status) {
             case "ONGOING":
@@ -76,9 +82,12 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Route updateDestinations(Long id, Point p){
-        Route route = this.routeRepository.findById(id).get();
-        ArrayList<Point> updatedDestinations = route.getDestinations().stream().filter(point -> point.equals(p)).collect(Collectors.toCollection(ArrayList::new));
+    public Route updateDestinations(Long id, double latitude, double longitude){
+        Route route = this.routeRepository.findById(id).orElseThrow(InvalidArgumentException::new);
+        Geometry toDelete = new GeometryFactory().createPoint(new Coordinate
+                (latitude, longitude));
+        ArrayList<Point> updatedDestinations = route.getDestinations().stream().dropWhile(p -> p.getGeom().distance(toDelete) / (180 * Math.PI) * 6371 < 0.05)
+                .collect(Collectors.toCollection(ArrayList::new));
         route.setDestinations(updatedDestinations);
         return this.routeRepository.save(route);
     }

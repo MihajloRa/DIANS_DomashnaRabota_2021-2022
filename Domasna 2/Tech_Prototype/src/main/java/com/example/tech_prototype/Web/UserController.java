@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/user")
 public class UserController {
     UserService userService;
@@ -24,13 +25,7 @@ public class UserController {
         this.routeService = routeService;
     }
 
-    @GetMapping
-    ResponseEntity<User> getUser(HttpServletRequest request){
-        User u = (User) request.getSession().getAttribute("user");
-        return ResponseEntity.ok().body(u);
-    }
-
-    @GetMapping("/{username}/routes")
+    @GetMapping(value="/{username}/routes", produces = "application/json")
     ResponseEntity<List<Route>> getUserRoutes(@PathVariable String username){
         List<Route> routes = this.routeService.getRoutes(username);
         return ResponseEntity.ok().body(routes);
@@ -40,7 +35,7 @@ public class UserController {
     ResponseEntity<Route> addUserRoute(@PathVariable String username,
                                        @RequestParam String latitude,
                                        @RequestParam String longitude,
-                                       @RequestParam String [] preferences) {
+                                       @RequestParam List<String> preferences) {
         Geometry start = new GeometryFactory().createPoint(new Coordinate
                 (Double.parseDouble(latitude), Double.parseDouble(longitude)));
         Route route = this.routeService.addRoute(username, start, preferences);

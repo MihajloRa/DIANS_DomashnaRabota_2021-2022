@@ -36,7 +36,7 @@ public class Route implements Serializable {
     @ManyToMany
     List<Point> destinations;
 
-    @ManyToOne
+    @ManyToOne()
     User user;
 
     public Route(User user, Geometry start, ArrayList<Point> destinations){
