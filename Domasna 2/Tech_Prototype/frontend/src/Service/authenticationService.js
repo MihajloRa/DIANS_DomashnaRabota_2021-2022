@@ -13,7 +13,7 @@ const authenticationService = {
         axios.post(`/auth/login`,{
             "username": username, 
             "password": password, 
-        })
+        });
     }
 };
 
