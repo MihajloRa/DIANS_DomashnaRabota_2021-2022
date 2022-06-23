@@ -1,0 +1,43 @@
+services:
+  postgis:
+    container_name: postgis
+    image: postgis
+    environment:
+      POSTGRES_PASSWORD: postgis
+      POSTGRES_DB: postgis
+      POSTGRES_USER: postgis
+    volumes:
+      - postgis:/data/postgis
+    ports:
+      - "5435:5432"
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+  osm-base:
+    image: explore-mk/osm-base:latest
+    container_name: osm-base
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - spring
+      - postgis
+    depends_on:
+      - postgis
+
+
+volumes:
+  postgis:
+  pgadmin:
